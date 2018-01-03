@@ -1,0 +1,116 @@
+@import "compass/css3";
+
+@font-face {
+  font-family: FreeSans;
+  src: url(../fonts/FreeSans/freesans.ttf);
+}
+
+.black-btn-flat
+{
+  cursor: pointer;
+  min-height: 40px;
+  min-width: 60px;
+  @include border-radius(5px); /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+  color: hsla(0.0, 0.0%, 100.0%, 1.00);
+  font-family: "FreeSans", "Helvetica","Verdana","Arial","sans-serif";
+  font-size: 16px;
+  text-align: center;
+  font-weight: bold;
+  @include text-shadow(0px -1px 0px hsla(0.0, 0.0%, 0.0%, 1.00));
+  @include box-shadow(0px 1px 2px hsla(0.0, 0.0%, 0.0%, 0.50),inset 0px 1px 0px hsla(0.0, 0.0%, 100.0%, 0.15),
+          inset 0 0px 0px 2px rgba(white, 0.1));
+  opacity: 1;
+
+  @include transition-duration(0.3s);
+  background: black;
+  color: white;
+  border: none;
+  padding: 8px 0;
+  cursor: pointer;
+  &:hover{
+    background: lighten(black, 2%);
+  }
+  &:active{
+    background: lighten(black, 3%);
+  }
+  &:disabled{
+    cursor: not-allowed!important;
+    background: darken(white, 30%)!important;
+    color: darken(white, 60%)!important;
+    @include text-shadow(none);
+  }
+}
+
+
+$buttonHeight: 48px;
+$buttonColor: #247edd;
+$buttonColors: "green" #1ca913, "red" #530f0e, "black" #000000, "yellow" #e8ba00, "white" #ffffff;
+
+.btn-gloss {
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  overflow: hidden;
+  min-width: $buttonHeight * 2;
+  line-height: $buttonHeight - 2px;
+  padding: 0 round($buttonHeight / 2);
+  font-size: 14px;
+  color: white;
+  font-family: "FreeSans", "Helvetica","Verdana","Arial","sans-serif";
+  text-align: center;
+  text-decoration: none;
+  @include text-shadow(0 1px darken($buttonColor, 20%));
+  background-color: $buttonColor;
+  background-clip: padding-box;
+  border: 2px solid;
+  @include border-radius(8px);
+  @include box-shadow(inset 0 1px rgba(white, .4), 0 1px 2px rgba(black, .2));
+  @include background(linear-gradient(top, rgba(white, .3), rgba(white, 0) 50%, rgba(black, .12) 51%, rgba(black, .04)));
+  @include user-select(none);
+
+  &.no-padding{
+    padding: 0;
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: -25%;
+    bottom: -25%;
+    left: -20%;
+    right: -20%;
+    @include border-radius(50%);
+    background: transparent;
+    @include box-shadow(inset 0 0 round($buttonHeight * .8) rgba(#ccc, .12));
+  }
+
+  &:hover { background-color: darken(saturate($buttonColor, 5%), 4%); }
+
+  &:active {
+    color: rgba(white, .9);
+    @include text-shadow(0 -1px darken($buttonColor, 20%));
+    background: darken($buttonColor, 5%);
+
+    @include box-shadow(inset 0 1px rgba(white, .4), 0 1px 2px rgba(black, .2));
+    @include background(linear-gradient(top, rgba(white, .3), rgba(white, 0) 50%, rgba(black, .12) 51%, rgba(black, .04)));
+
+  }
+}
+
+@each $pair in $buttonColors {
+  .btn-gloss-#{nth($pair, 1)} {
+    $color: nth($pair, 2);
+    background-color: rgba($color, 0.75);
+    border-color: rgba(darken($color, 10%), 0.1) rgba(darken($color, 15%), 0.3) rgba(darken($color, 15%), 0.85);
+
+    &:hover {
+      border-color: rgba(darken($color, 7%), 0.1) rgba(darken($color, 13%), 0.3) rgba(darken($color, 13%), 0.85);
+      background-color: rgba(lighten($color, 10%), 0.75);
+    }
+
+    &:active {
+      background: rgba(darken($color, 5%), .75);
+      @include background(linear-gradient(top, darken($color, 10%), lighten($color, 5%)));
+    }
+  }
+}

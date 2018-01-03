@@ -1,0 +1,70 @@
+#!/bin/sh
+: <<'description'
+This script setups the Light'It up server
+It creates an autostart (set autostart to false to disable autostart) service which launch the server at boot
+It installs all required dependencies and create required folders and files (logs, and so on..)
+The server auto starts at the installation end
+description
+
+autostart_service=true
+projectname="lightitup"
+
+
+DIRECTORY=$(cd `dirname $0` && pwd)
+echo '======================= Cleaning previous version ======================'
+service $projectname stop 2>/dev/null
+rm -rf /opt/$projectname/
+rm -rf /var/log/$projectname/
+rm -f /etc/init.d/$projectname
+
+echo '=========================== Updating system ==========================='
+yes | apt-get update
+yes | apt-get upgrade
+
+echo '=========================== Installing Git ==========================='
+yes | apt-get install git-core
+
+echo '=========================== Installing node & npm ==========================='
+yes | apt-get install curl
+yes | apt-get install gnupg2
+curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
+bash nodesource_setup.sh
+yes | apt-get install nodejs
+
+echo '=========================== Installing python & pip ==========================='
+yes | apt-get install python python-pip python-dev
+
+echo '=========================== Installing python required libraries ==========================='
+yes | apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg libav-tools
+yes | apt-get install python-pyaudio
+yes | apt-get install python-scipy
+pip install Adafruit_WS2801
+pip install Adafruit_GPIO
+pip install RPi.GPIO
+pip install rpi_ws281x
+
+echo '=========================== Creating log files & directory ==========================='
+mkdir /var/log/$projectname/
+touch /var/log/$projectname/output.log
+touch /var/log/$projectname/error.log
+
+echo '=========================== Moving project to /opt/ and crate an auto-run service ==========================='
+mkdir /opt/$projectname/
+cp -r $DIRECTORY/* /opt/$projectname
+if [ "$autostart_service"  = true ] ; then
+    cp $DIRECTORY/bin/$projectname /etc/init.d/$projectname
+    chmod 0755 /etc/init.d/$projectname
+fi
+
+echo '=========================== Installing node dependencies ==========================='
+cd /opt/$projectname/ || exit
+export LZZ_COMPAT=1
+npm install
+
+echo '=========================== Compiling project ==========================='
+npm run-script build
+
+echo '=========================== Installation done, starting service ==========================='
+#systemctl daemon-reload
+update-rc.d $projectname defaults
+service $projectname start

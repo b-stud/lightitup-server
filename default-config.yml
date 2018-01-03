@@ -1,0 +1,18 @@
+LEDS_DRIVER: 'WS2801_Python_Driver' # One of the following WS2801_Python_Driver, APA102-DotStar_Python_Driver, LPD8806_Python_Driver, P9813_Python_Driver, WS281X_Python_Driver, WS2811_400_Python_Driver, WS2801_Python_Driver
+LEDS_COUNT: 148 # How many LEDs does contain your light strip
+LEDS_REFRESH_TIME: 40 # At which milliseconds frequency should the light strip be refreshed by the software
+HTTP_SERVER: true # To create an HTTP server
+HTTPS_SERVER: true # To create an HTTPS server
+SERVER_PORT: 8000 # HTTP server port
+SERVER_PORT_SECURE: 8443 # HTTPS server port
+PLAY_LAST_EFFECT_ON_STARTUP: true # Restore last effect played on boot time
+AUDIO:
+    DRIVER: 'Python_Audio_Driver'
+    LATENCY: 0 # If you're using wireless speakers you may need to adjust this values (in milliseconds)
+    INTERFACE_INDEX: ~ # Let this by default to auto select a suitable interface, in case it doesn't work you can run 'python bin/py/audio/listInterfaces.py' to have the list and choose by yourself
+SPI:
+  RGB_ORDER: 'RBG' #RGB or RBG or BGR or BRG or GRB or GBR
+  CLK_PIN: 11  # For libraries using CLOCK and DATA Pins scheme (11 + 10 PINs correspond to device 0 port 0)
+  DATA_PIN: 10
+  DEVICE: 0 # For libraries using PORT.DEVICE scheme (Port.Device 0.0 corresponds to Clock PIN 23 and Data PIN 24)
+  PORT: 0

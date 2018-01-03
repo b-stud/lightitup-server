@@ -1,0 +1,163 @@
+@import "compass/css3";
+
+$black: #000000;
+$white: #ffffff;
+$green: #6fd230;
+$dayMinWidth: 25px;
+$timePeriodHeight: 100% / 12;
+$borderColor: #0a0a0a;
+
+#scheduler-section > div.content > div {
+  position: relative;
+  & > div#schedule-form {
+    margin-top: 30px;
+    margin-bottom: 20px;
+    text-align: left;
+    color: $white;
+    @include box-sizing(border-box);
+    & button{
+      font-size: 100%;
+      line-height: normal;
+      min-height: 0;
+      padding: 8px 12px;
+      margin-top: 12px;
+      margin-right: 10px;
+      &#btn-add-event{
+        margin-right: 0px;
+      }
+      &#btn-remove-event{
+        display: none;
+        &.visible{
+          display: inline-block;
+        }
+      }
+      &#btn-show-add-event-form{
+        margin-top: 0px;
+        display: block;
+        &.hidden{
+          display: none;
+        }
+      }
+    }
+    & > form {
+      display: none;
+      &.visible{
+        display: block;
+      }
+      & > div.form-row {
+        width: 100%;
+        display: flex;
+        @include flex-flow(row nowrap);
+        @include align-items(top);
+        margin-bottom: 10px;
+        & > div.title {
+          width: 100px;
+        }
+        & > div.control {
+          @include flex(1);
+          & button#btn-add-event-cancel{
+              margin-right: 10px;
+          }
+          &#mode-repeated{
+            & > div {
+              display: inline-block;
+              white-space: nowrap;
+              & > * {
+                vertical-align: top;
+              }
+              & > input {
+                margin: 0;
+                &:checked + label {
+                  color: $green;
+                }
+              }
+              & > label {
+                margin: 0 10px;
+              }
+            }
+          }
+        }
+      }
+    }
+    & #repetition-mode-container {
+      & > div.mode {
+        &#mode-repeated {
+          display: none;
+        }
+      }
+    }
+  }
+
+
+  div#calendar-list-wrapper {
+    display: block;
+    & > ul {
+      width: 100%;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      text-align: left;
+      @include display-flex;
+      @include flex-flow(row nowrap);
+      @include justify-content(space-between);
+      & > li {
+        margin-bottom: 25px;
+        $width: 100% / 7.6;
+        width: $width;
+        & > span {
+          font-weight: bold;
+          font-size: 130%;
+          color: $white;
+          display: block;
+          margin-bottom: 10px;
+          text-align: center;
+        }
+        & > ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          & > li {
+            color: $white;
+            margin-bottom: 15px;
+            @include text-shadow(0 0 3px $black);
+            @include border-radius(4px);
+            cursor: pointer;
+            @include display-flex();
+            @include flex-flow(row wrap);
+            overlow: hidden;
+            padding: 0 5px;
+            & > span{
+              margin-top: 5px;
+              &.time{
+                width: 38px;
+                font-weight: bold;
+                display: inline-block;
+              }
+              &.name{
+                @include flex(1);
+                text-align: left;
+                margin-bottom: 5px;
+                overlow: hidden;
+              }
+            }
+            @mixin background-fill($color){
+              background-color: $color;
+              border: 1px solid darken($color, 10%);
+              &:hover, &.hover {
+                background-color: lighten($color, 13%);
+                border: 1px solid $white;
+              }
+            }
+            @include background-fill(#001e50);
+            &.repeated {
+              @include background-fill(#005000);
+            }
+            &.off {
+              @include background-fill(#640000);
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css"/>
+    <title>Light'It Up Server</title>
+</head>
+<body>
+<header></header>
+<section id="main">
+    <div class="ctrl-btns">
+        <button id="scheduler" class="black-btn-flat"><i class="fa fa-clock-o"></i> Scheduler</button>
+        <button id="create" class="black-btn-flat"><i class="fa fa-plus-circle"></i> New effect</button>
+    </div>
+    <ul id="effects-list">
+        <li class="persistent" id="reset">
+            <div class="description-btn btn-gloss btn-gloss-red">
+                <div><i class="fa fa-power-off"></i> Switch off</div>
+            </div>
+        </li>
+        <li class="persistent" id="btncolorpicker">
+            <div class="description-btn btn-gloss btn-gloss-white">
+                <div class="colorpicker-txt"><i class="fa fa-crosshairs"></i> Pick a color</div>
+            </div>
+        </li>
+    </ul>
+</section>
+<section id="modal">
+    <div class="content">
+        <div class="close"><i class="fa fa-times"></i></div>
+        <form id="effect-form">
+            <div>
+                <div>Name</div>
+                <div><input type="text" name="name" placeholder="A unique name to reference the effect" required/></div>
+            </div>
+            <div>
+                <div>Config</div>
+                <div><textarea placeholder="Paste here effect config exported from www.bstud.com/lightitup" name="config"
+                               required></textarea></div>
+            </div>
+            <div>
+                <div>Default time limit (ms)</div>
+                <div><input type="number" name="timeLimit" min="0" placeholder="Let this field empty to run forever"/>
+                </div>
+            </div>
+            <div>
+                <div>Default priority</div>
+                <div><input type="number" name="priority" min="0" value="0" placeholder="0 by default"/></div>
+            </div>
+            <div>
+                <div></div>
+                <div class="btn-wrapper">
+                    <button class="black-btn-flat" type="button" id="cancel"><i class="fa fa-times"></i> Cancel</button>
+                    <button class="black-btn-flat" type="button" id="saveBtn"><i class="fa fa-check"></i> Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<section id="color-picker">
+    <div class="content">
+        <div>
+            <div class="ctrls">
+                <div class="btn-wrapper">
+                    <button id="btnWhiteCanvas">White</button>
+                    <button id="btnColorCanvas" class="active">Colors</button>
+                </div>
+                <div class="close-wrapper">
+                    <button id="closeColorPicker" class="close"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas></canvas>
+                <div id="picker-ctrl">
+                    <div>
+                        <i class="fa fa-crosshairs"></i>
+                    </div>
+                </div>
+            </div>
+            <div id="preview-color"></div>
+        </div>
+    </div>
+</section>
+<section id="scheduler-section">
+    <div class="content">
+        <div class="close"><i class="fa fa-times"></i></div>
+        <div class="wrapper">
+            <div id="schedule-form">
+                <button class="black-btn-flat" type="button" id="btn-show-add-event-form"><i class="fa fa-plus"></i> Create an event</button>
+                <form>
+                    <div class="form-row">
+                        <div class="title">Triggered effect</div>
+                        <div class="control">
+                            <select id="effect-name">
+                                <option value="">Switch Off</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="title">Mode</div>
+                        <div class="control">
+                            <select name="mode" id="choice-changer">
+                                <option value="onetime">Once a week</option>
+                                <option value="repeated">Repeated</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row" id="repetition-mode-container">
+                        <div class="title">Repetition</div>
+                        <div class="mode mode-onetime control">
+                            <select name="weekday" id="onetime-weekday">
+                                <option value="0">Monday</option>
+                                <option value="1">Tuesday</option>
+                                <option value="2">Wednesday</option>
+                                <option value="3">Thursday</option>
+                                <option value="4">Friday</option>
+                                <option value="5">Saturday</option>
+                                <option value="6">Sunday</option>
+                            </select>
+                        </div>
+                        <div id="mode-repeated" class="mode control">
+                            <div>
+                                <input type="checkbox" value="0" id="repeated-monday"><label for="repeated-monday">Monday</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" value="1" id="repeated-tuesday"><label for="repeated-tuesday">Tuesday</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" value="2" id="repeated-wednesday"><label for="repeated-wednesday">Wednesday</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" value="3" id="repeated-thursday"><label for="repeated-thursday">Thursday</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" value="4" id="repeated-friday"><label for="repeated-friday">Friday</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" value="5" id="repeated-saturday"><label for="repeated-saturday">Saturday</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" value="6" id="repeated-sunday"><label for="repeated-sunday">Sunday</label>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="title">Time</div>
+                        <div class="control">
+                            <select id="hours"></select>
+                            <select id="minutes"></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="title"></div>
+                        <div class="control">
+                            <button class="black-btn-flat" type="button" id="btn-hide-add-event-form"><i class="fa fa-times"></i> Cancel</button>
+                            <button class="black-btn-flat" type="button" id="btn-remove-event"><i class="fa fa-trash"></i> Remove</button>
+                            <button class="black-btn-flat" type="button" id="btn-add-event"><i class="fa fa-check"></i> Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="calendar-list-wrapper">
+                <ul>
+                    <li>
+                        <span>M</span>
+                        <ul class="day-list"></ul>
+                    </li>
+                    <li>
+                        <span>T</span>
+                        <ul class="day-list"></ul>
+                    </li>
+                    <li>
+                        <span>W</span>
+                        <ul class="day-list"></ul>
+                    </li>
+                    <li>
+                        <span>T</span>
+                        <ul class="day-list"></ul>
+                    </li>
+                    <li>
+                        <span>F</span>
+                        <ul class="day-list"></ul>
+                    </li>
+                    <li>
+                        <span>S</span>
+                        <ul class="day-list"></ul>
+                    </li>
+                    <li>
+                        <span>S</span>
+                        <ul class="day-list"></ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="calendar-wrapper">
+                <table id="calendar" cellpadding=0 cellspacing=0>
+                    <tr class="days">
+                        <td></td>
+                        <td>M</td>
+                        <td>T</td>
+                        <td>W</td>
+                        <td>T</td>
+                        <td>F</td>
+                        <td>S</td>
+                        <td>S</td>
+                    </tr>
+                    <tr class="time">
+                        <td id="timeSpans">
+                            <div><span>00:00</span></div>
+                            <div><span>02:00</span></div>
+                            <div><span>04:00</span></div>
+                            <div><span>06:00</span></div>
+                            <div><span>08:00</span></div>
+                            <div><span>10:00</span></div>
+                            <div><span>12:00</span></div>
+                            <div><span>14:00</span></div>
+                            <div><span>16:00</span></div>
+                            <div><span>18:00</span></div>
+                            <div><span>20:00</span></div>
+                            <div><span>22:00</span></div>
+                        </td>
+                        <td class="daytime"></td>
+                        <td class="daytime"></td>
+                        <td class="daytime"></td>
+                        <td class="daytime"></td>
+                        <td class="daytime"></td>
+                        <td class="daytime"></td>
+                        <td class="daytime"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<footer>
+    <div>
+        <div><a href="http://www.b-stud.com/" target="_blank">© www.b-stud.com</a></div>
+    </div>
+</footer>
+<div class="loader-wrapper">
+    <div class="loader">
+        <div class="loader-blk"></div>
+        <div class="loader-blk an_delay"></div>
+        <div class="loader-blk an_delay"></div>
+        <div class="loader-blk"></div>
+    </div>
+</div>
+<script type="text/javascript" src="dist/server-interface.js"></script>
+</body>
+</html>

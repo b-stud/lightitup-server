@@ -1,0 +1,601 @@
+@import "compass/css3";
+
+$black: #000;
+$white: #fff;
+$grey: #111;
+$grey2: #3c3c3c;
+$red: #670000;
+$blue: #003366;
+$headerHeight: 100px;
+$footerHeight: 40px;
+$headerFooterBg: rgba($black, 0.85);
+
+@import "loader";
+@import "button";
+@import "scheduler";
+
+@mixin fixedShadow(){
+  @include box-shadow(0 0 10px 1px rgba($black, 0.9));
+}
+@mixin modalStyle(){
+  border: 1px solid lighten($black, 10%);
+  background: rgba($black, 0.7);
+  @include border-radius(4px);
+  @include box-shadow(0 8px 20px 0 rgba($black, 0.7));
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
+body {
+  background-image: url('../img/bg.jpg');
+  background-size: auto;
+  background-repeat: repeat;
+  background-color: $black;
+  background-position: center center;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-family: Arial;
+  font-size: 12px;
+  position: relative;
+}
+
+header {
+  margin: 0;
+  background-color: $headerFooterBg;
+  @include fixedShadow();
+  border-bottom: 2px solid darken($grey, 2%);
+  height: $headerHeight;
+  background-image: url(../img/logo.png);
+  background-position: center center;
+  background-size: 228px auto;
+  background-repeat: no-repeat;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+section#modal{
+  position: fixed;
+  z-index: 2;
+  background: rgba($black, 0.83);
+  width: 100%;
+  height: 100%;
+  top: -100%;
+  opacity: 0;
+  left: 0;
+  display: flex;
+  @include align-items(center);
+  text-align: center;
+  @include transition(opacity 0.3s linear 0s, top 0s linear 0.3s);
+  & > *{
+    margin: 0 auto;
+  }
+  &.visible{
+    top: 0;
+    opacity: 1;
+    @include transition(opacity 0.3s ease-out 0s, top 0s linear 0s);
+  }
+
+  & > div.content{
+    position: relative;
+    & > div.close{
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      margin: 0;
+      padding: 0;
+      color: rgba($white, 0.7);
+      line-height: 20px;
+      font-size: 20px;
+      @include transition-duration(0.3s);
+      cursor: pointer;
+      &:hover{
+        color: rgba($white, 1);
+      }
+    }
+
+    width: 90%;
+    @media screen and (min-width: 768px) {
+      width: 80%;
+    }
+    @media screen and (min-width: 1192px) {
+      width: 900px;
+    }
+
+    @include box-sizing(border-box);
+    @include modalStyle();
+    padding: 40px 20px;
+    @include display-flex;
+    @include align-items(center);
+    & > form {
+      margin: 0 auto;
+      width: 100%;
+      & > div {
+        @include display-flex;
+        @include flex-flow(row wrap);
+        & > div {
+          padding: 0 20px 20px 0;
+          vertical-align: top;
+          display: inline-block;
+          &:first-child {
+            text-align: left;
+            font-weight: bold;
+            font-size: 14px;
+            color: $white;
+            width: 120px;
+            @include box-sizing(border-box);
+          }
+          &:last-child {
+            flex: 1;
+            text-align: left;
+            & > input, & > textarea {
+              @include box-sizing(border-box);
+              width: 100%;
+            }
+            & > input, & > textarea {
+              @include border-radius(4px);
+              padding: 5px;
+              border:1px solid #eee;
+            }
+            & > textarea{
+              height: 150px;
+            }
+
+            &.btn-wrapper{
+              width: 100%;
+              @include display-flex;
+              @include flex-flow(row wrap);
+              @include justify-content(space-between);
+              & > button{
+                font-size: 14px;
+                margin: 0 5px;
+                flex: 1;
+                margin-bottom: 10px;
+                &#saveBtn{
+                }
+                &#cancel{
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+section#color-picker{
+  position: fixed;
+  z-index: 2;
+  background: rgba($black, 0.83);
+  width: 100%;
+  height: 100%;
+  top: -100%;
+  opacity: 0;
+  left: 0;
+  @include display-flex;
+  @include align-items(center);
+  text-align: center;
+  @include transition(opacity 0.3s linear 0s, top 0s linear 0.3s);
+  & > *{
+    margin: 0 auto;
+  }
+  &.visible{
+    top: 0;
+    opacity: 1;
+    @include transition(opacity 0.3s ease-out 0s, top 0s linear 0s);
+  }
+
+  & > div.content{
+    position: relative;
+    height: 70%;
+    & > div{
+      height: 100%;
+      width: 100%;
+      @include display-flex;
+      @include flex-flow(column nowrap);
+      & > div.ctrls{
+        height: 30px;
+        @include display-flex;
+        @include flex-flow(row wrap);
+        border-bottom: 1px solid $black;
+        & > div.btn-wrapper {
+          flex: 1;
+          @include display-flex;
+          @include flex-flow(row wrap);
+          @include justify-content(space-between);
+          background: $black;
+          & > button{
+            width: calc(50% - 0.5px);
+            color: white;
+            border: none;
+            height: 100%;
+            line-height: 100%;
+          }
+        }
+        & > div.close-wrapper{
+          width: 30px;
+          &>button{
+            color: white;
+            width: 100%;
+            height: 100%;
+            line-height: 18px;
+            margin: 0 auto;
+            border: none;
+            border-left: 1px solid $black;
+            @include box-sizing(border-box);
+          }
+        }
+
+        & button{
+          cursor: pointer;
+          @include border-radius(none);
+          @include transition-duration(0.3s);
+          font-weight: bold;
+          @include text-shadow(0 0 2px rgba($white,0.5), 0 0 1px $black);
+          background-color: #aebcbf;
+          @include filter-gradient(#aebcbf, #0a0809, vertical);
+          @include background-image(linear-gradient(top, #aebcbf 0%,#6e7774 50%,#0a0e0a 51%,#0a0809 100%));
+          &:hover{
+            background-color: #b7c4c7; // Old browsers
+            @include filter-gradient(#b7c4c7, #282024, vertical); // IE6-9
+            @include background-image(linear-gradient(top, #b7c4c7 0%,#7d8784 50%,#202e20 51%,#282024 100%));
+          }
+          &:active, &.active{
+            background-color: #090909; // Old browsers
+            @include filter-gradient(#090909, #1a1a1a, vertical); // IE6-9
+            @include background-image(linear-gradient(top, #090909 0%,#2b2b2b 49%,#1a1a1a 100%));
+          }
+        }
+      }
+      & > div.canvas-wrapper{
+        position: relative;
+        flex: 1;
+        @include display-flex;
+        background: red;
+        max-height: 100%;
+        overflow: hidden;
+        & > canvas {
+          width: 100%;
+          height: 100%;
+          background: purple;
+        }
+        & > div#picker-ctrl {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          & > div{
+            position: absolute;
+            left: -100px;
+            top: -100px;
+            color: white;
+            @include text-shadow(0 0 3px $black);
+            font-size: 30px;
+          }
+        }
+      }
+      & > div#preview-color{
+        background: black;
+        height: 40px;
+        width: 100%;
+        @include box-shadow(0px 4px 5px 0px rgba($white, 0.63) inset);
+      }
+    }
+
+
+    width: 90%;
+    @media screen and (min-width: 768px) {
+      width: 80%;
+    }
+    @media screen and (min-width: 1192px) {
+      width: 900px;
+    }
+    @include box-sizing(border-box);
+    border: 1px solid lighten($black, 20%);
+    background: rgba($black, 0.7);
+    @include border-radius(4px);
+    @include display-flex;
+    @include align-items(center);
+  }
+}
+
+
+section#scheduler-section{
+  position: fixed;
+  z-index: 2;
+  background: rgba($black, 0.83);
+  width: 100%;
+  height: 100%;
+  top: -100%;
+  opacity: 0;
+  left: 0;
+  @include display-flex;
+  align-items: center;
+  text-align: center;
+  @include transition(opacity 0.3s linear 0s, top 0s linear 0.3s);
+  & > *{
+    margin: 0 auto;
+  }
+  &.visible{
+    top: 0;
+    opacity: 1;
+    @include transition(opacity 0.3s ease-out 0s, top 0s linear 0s);
+  }
+
+  & > div.content{
+    position: relative;
+    height: 90%;
+    & > div.close{
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      margin: 0;
+      padding: 0;
+      color: rgba($white, 0.7);
+      line-height: 20px;
+      font-size: 20px;
+      @include transition-duration(0.3s);
+      cursor: pointer;
+      z-index: 1;
+      &:hover{
+        color: rgba($white, 1);
+      }
+    }
+    & > div.wrapper{
+      height: 100%;
+      width: 100%;
+      display: flex;
+      @include flex-flow(column nowrap);
+      padding: 20px;
+      @include box-sizing(border-box);
+      overflow-y: auto;
+    }
+    width: 90%;
+    @media screen and (min-width: 768px) {
+      width: 80%;
+    }
+    @media screen and (min-width: 1192px) {
+      width: 900px;
+    }
+    @include box-sizing(border-box);
+    @include display-flex;
+    @include align-items(center);
+    @include modalStyle();
+  }
+}
+
+
+div.loader-wrapper{
+  position: absolute;
+  background: rgba($black, 0.7);
+  width: 100%;
+  height: 100%;
+  top: -100%;
+  opacity: 0;
+  left: 0;
+  @include display-flex;
+  @include align-items(center);
+  text-align: center;
+  z-index: 2;
+  & > *{
+    margin: 0 auto;
+  }
+  @include transition(opacity 0.5s linear 0s, top 0s linear 0.5s);
+  &.visible{
+    top: 0;
+    opacity: 1;
+    @include transition(opacity 0.5s linear 0s, top 0s linear 0s);
+  }
+}
+
+section#main {
+  padding-bottom: $footerHeight;
+  padding-top: $headerHeight;
+  @include transition(filter 0.5s ease-out);
+  @include filter(none);
+  &.blur {
+    @include filter(blur(4px));
+  }
+  & > div.ctrl-btns {
+    padding: 0 40px;
+    text-align: right;
+    margin: 20px 0;
+    & > button{
+      padding: 8px 14px;
+      margin-left: 10px;
+    }
+  }
+  & > ul {
+    margin: 50px 0 0 0;
+    display: flex;
+    @include flex-flow(row wrap);
+    //justify-content: space-between;
+    @media screen and (max-width: 480px) {
+      padding: 0 10%;
+    }
+    @media screen and (min-width: 481px) {
+      padding: 0 5%;
+    }
+    & > li {
+      width: 100%;
+      opacity: 0;
+      @include filter(blur(8px));
+      @include animation(fadeIn 0.63s ease-out forwards);
+    }
+    @media screen and (min-width: 624px) {
+      & > li {
+        width: 48%;
+        margin-right: 2%;
+      }
+    }
+    @media screen and (min-width: 768px) {
+      & > li {
+        width: 30%;
+        margin-right: 3%;
+      }
+    }
+    @media screen and (min-width: 1192px) {
+      & > li {
+        width: 19%;
+        margin-right: 1%;
+      }
+    }
+    & > li {
+      overflow: hidden;
+      @include box-sizing(border-box);
+      margin-bottom: 20px;
+      height: 80px;
+      background: transparent;
+      cursor: pointer;
+      @include transition-duration(0.5s);
+      text-align: center;
+      @include align-items(center);
+      position: relative;
+      display: block;
+      &.removing{
+        @include user-select(none);
+        @include filter(grayscale(100%) blur(1px));
+        opacity: 0.5;
+      }
+      &.persistent > div  > div {
+        margin: 0 auto;
+      }
+      & > div.description-btn{
+        overflow: hidden;
+        font-size: 16px;
+        font-weight: bold;
+        width: 100%;
+        height: 100%;
+        @include align-items(center);
+        @include box-sizing(border-box);
+        @include display-flex;
+        @include flex-flow(row wrap);
+        text-decoration: none;
+        & > div.data {
+          flex: 1;
+          text-align: center;
+          width: 100%;
+          @include display-flex;
+          height: 100%;
+          @include align-items(center);
+          @include box-sizing(border-box);
+          padding: 12px;
+          & > div.name {
+            margin: 0 auto;
+            text-align: center;
+            line-height: normal;
+          }
+        }
+        & > div.controls{
+          z-index: 1;
+          width: 25px;
+          height: 100%;
+          display: flex;
+          @include flex-flow(column wrap);
+          border-left: 1px solid rgba($black, 0.5);
+          @include box-shadow(0 0 5px 2px rgba($black, 0.2));
+          & > div{
+            height: 50%;
+            @include display-flex;
+            @include align-items(center);
+            & > button{
+              @include transition-duration(0.3s);
+              text-align: center;
+              width: 100%;
+              height: 100%;
+              color: $white;
+              border: 0;
+              padding: 0;
+              cursor: pointer;
+              background: #050505;
+              &.edit{
+                background: $grey2;
+                &:hover{
+                  background: lighten($grey2, 5%);
+                }
+                &:active{
+                  background: lighten($grey2, 8%);
+                }
+                border-bottom: 1px solid black;
+              }
+              &.remove{
+                background: $grey2;
+                &:hover{
+                  background: lighten($grey2, 5%);
+                }
+                &:active{
+                  background: lighten($grey2, 8%);
+                }
+              }
+              &:disabled{
+                cursor: not-allowed!important;
+                background: darken($white, 30%)!important;
+                color: darken($white, 60%)!important;
+              }
+            }
+          }
+        }
+        & > div.colorpicker-txt {
+          background: $black;
+          @include border-radius(4px);
+          padding: 10px 12px;
+          line-height: initial;
+        }
+      }
+
+      &.disabled{
+        cursor: not-allowed;
+        @include filter(grayscale(100%));
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+footer{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  background-color: $headerFooterBg;
+  @include fixedShadow();
+  border-top: 2px solid darken($grey, 2%);
+  width: 100%;
+  height: $footerHeight;
+  z-index: 1;
+  & > div{
+    @include display-flex;
+    @include align-items(center);
+    text-align: center;
+    height: 100%;
+    & > div {
+      margin: 0 auto;
+      display: inline-block;
+      & > a {
+        color: $white;
+        @include text-shadow(0 0 6px rgba($white, .5));
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+
+@include keyframes(fadeIn) {
+  0% {
+    opacity: 0;
+    @include filter(blur(8px));
+  }
+  100% {
+    opacity: 1;
+    @include filter(blur(0px));
+  }
+}
