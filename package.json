@@ -14,6 +14,7 @@
   },
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
+    "@b-stud/lightitup-engine": "^1.0.0",
     "better-sqlite3": "^4.0.3",
     "body-parser": "^1.18.2",
     "commander": "^2.11.0",
