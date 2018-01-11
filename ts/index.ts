@@ -9,7 +9,7 @@ import EffectsUtils from './utils/EffectsUtils';
 import AudioDrivers from './handlers/audio/AudioDrivers';
 import LightStripDrivers from "./handlers/lightstrips/LightStripDrivers";
 import ControlInterfaceServer from './ControlInterface/ControlInterfaceServer';
-import * as LIU_Engine from '../node_modules/@b-stud/lightitup-engine/src/LightItUpEngineCore';
+import * as LIU_Engine from '@b-stud/lightitup-engine/src/LightItUpEngineCore';
 
 
 /****************************************Requirements*************************************/
