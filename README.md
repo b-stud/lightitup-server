@@ -196,6 +196,12 @@ a simple API is available.
 - **Method** POST
 - **Return** 200, `Reset done`
 
+### Toggle the lightstrip (reset / last effect set)
+
+- **URL** /toggle
+- **Method** POST
+- **Return** 200, `Toggle done`
+
 ### Setup an effect on the fly (not saved in your list)
 
 - **URL** /stack
