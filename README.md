@@ -21,7 +21,7 @@
 ## 1. Introduction
 
 Light'It up server is a node server for Raspberry devices that let you easily animate your light strip. It integrates
-the [Light'It Up engine](http://www.github.com/b-stud/lightitup-engine) to use existing or create customized light effects.
+the [Light'It Up engine](https://github.com/b-stud/lightitup-engine) to use existing or create customized light effects.
 It uses HTTP requests and expose a very simple API, which means you can now easily integrate your lightstrip inside any domotics solution.
 As described below, the server will offer you great features like a time scheduler, effects priorities management and more.
 
@@ -149,7 +149,7 @@ restarting the server : `service lightitup restart`
 
 To create effects or used existing presets, do the following process :
 
-- Go to [http://www.b-stud.com/lightitup/configurator](http://www.b-stud.com/lightitup/configurator)
+- Go to [http://www.b-stud.com/lightitup-configurator](http://www.b-stud.com/lightitup-configurator)
 - Create and custom your effect using available options
 - Then click on `Export current effect` and click on `Copy`
 - Go back to the server interface and click on `New Effect`

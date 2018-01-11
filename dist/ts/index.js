@@ -1,44 +1,40 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Server entry point
  * This file handles requests to append effect, clear the light strip
  * It implements a stack that allow to auto switch between effects regarding their priority & time limits
  * Should be called with `node dist/index.ts <http-port> <handle-audio> <audio-device-index> <audio-device-latency>` after having compiled with typescript
  */
-import Stack from './stack/Stack';
-import EffectsUtils from './utils/EffectsUtils';
-import AudioDrivers from './handlers/audio/AudioDrivers';
-import LightStripDrivers from "./handlers/lightstrips/LightStripDrivers";
-import ControlInterfaceServer from './ControlInterface/ControlInterfaceServer';
-import * as LIU_Engine from '../node_modules/@b-stud/lightitup-engine/src/LightItUpEngineCore';
-
-
+var Stack_1 = require("./stack/Stack");
+var EffectsUtils_1 = require("./utils/EffectsUtils");
+var AudioDrivers_1 = require("./handlers/audio/AudioDrivers");
+var LightStripDrivers_1 = require("./handlers/lightstrips/LightStripDrivers");
+var ControlInterfaceServer_1 = require("./ControlInterface/ControlInterfaceServer");
+var LIU_Engine = require("../node_modules/@b-stud/lightitup-engine/src/LightItUpEngineCore");
 /****************************************Requirements*************************************/
-const fs = require('fs');
-const path = require('path');
-const thisPath = path.resolve(__dirname, '.');
-
-const http = require('http');
-const https = require('https');
-const credentials = {
+var fs = require('fs');
+var path = require('path');
+var thisPath = path.resolve(__dirname, '.');
+var http = require('http');
+var https = require('https');
+var credentials = {
     key: fs.readFileSync(thisPath + '/../certificates/server.key', 'utf8'),
-    cert: fs.readFileSync(thisPath +'/../certificates/server.crt', 'utf8')
+    cert: fs.readFileSync(thisPath + '/../certificates/server.crt', 'utf8')
 };
-const express = require("express");
-const bodyParser = require('body-parser');
-
-const YAML = require('yamljs');
-const config = YAML.load(path.resolve(__dirname, '../default-config.yml'));
-const LIGHT_STRIP_DRIVER = config.LEDS_DRIVER || 'WS2801_Python_Driver'; // Which light strip handler to use
-const LEDS_COUNT = (undefined != config.LEDS_COUNT) ? config.LEDS_COUNT : 150;  //Count of LEDS
-const LEDS_REFRESH_TIME = config.LEDS_REFRESH_TIME || 40;   //Update frequency
-const AUDIO_DRIVER = config.AUDIO.DRIVER || 'Python_Audio_Driver'; // Which audio driver to use
-const DEFAULT_PORT = config.SERVER_PORT || 8000;  //HTTP Default Server Port
-const DEFAULT_PORT_SECURE = config.SERVER_PORT_SECURE || 8443;  //HTTP Default Server Port
-
-const rgbRawOrder = config.SPI.RGB_ORDER.toUpperCase() || 'RGB';
-const rgbOrder = [rgbRawOrder.indexOf('R'), rgbRawOrder.indexOf('G'), rgbRawOrder.indexOf('B') ];
-
-const program = require('commander');
+var express = require("express");
+var bodyParser = require('body-parser');
+var YAML = require('yamljs');
+var config = YAML.load(path.resolve(__dirname, '../default-config.yml'));
+var LIGHT_STRIP_DRIVER = config.LEDS_DRIVER || 'WS2801_Python_Driver'; // Which light strip handler to use
+var LEDS_COUNT = (undefined != config.LEDS_COUNT) ? config.LEDS_COUNT : 150; //Count of LEDS
+var LEDS_REFRESH_TIME = config.LEDS_REFRESH_TIME || 40; //Update frequency
+var AUDIO_DRIVER = config.AUDIO.DRIVER || 'Python_Audio_Driver'; // Which audio driver to use
+var DEFAULT_PORT = config.SERVER_PORT || 8000; //HTTP Default Server Port
+var DEFAULT_PORT_SECURE = config.SERVER_PORT_SECURE || 8443; //HTTP Default Server Port
+var rgbRawOrder = config.SPI.RGB_ORDER.toUpperCase() || 'RGB';
+var rgbOrder = [rgbRawOrder.indexOf('R'), rgbRawOrder.indexOf('G'), rgbRawOrder.indexOf('B')];
+var program = require('commander');
 program
     .version('0.1.0')
     .option('-p, --port <n>', 'HTTP port', parseInt)
@@ -49,24 +45,21 @@ program
     .option('-d, --device <n>', 'Audio interface #index', parseInt)
     .option('-l, --latency <n>', 'Audio device latency (ms) (e.g. in case of wireless speakers)', parseInt)
     .parse(process.argv);
-const usedPort = !isNaN(program.port) ? program.port : DEFAULT_PORT;
-const usedPort_secure = !isNaN(program.securePort) ? program.securePort : DEFAULT_PORT_SECURE;
-const handleAudio = program.audio;
-const audioDevice = (handleAudio && !isNaN(program.device)) ? program.device : ((undefined != config.AUDIO.INTERFACE_INDEX) ? config.AUDIO.INTERFACE_INDEX : -1);
-const audioDeviceLatency = !isNaN(program.latency) ? program.latency : config.AUDIO.LATENCY; //Default audio device latency, mostly for bluetooth devices
-const lightStripHandler = LightStripDrivers.load(LIGHT_STRIP_DRIVER);
-
-
+var usedPort = !isNaN(program.port) ? program.port : DEFAULT_PORT;
+var usedPort_secure = !isNaN(program.securePort) ? program.securePort : DEFAULT_PORT_SECURE;
+var handleAudio = program.audio;
+var audioDevice = (handleAudio && !isNaN(program.device)) ? program.device : ((undefined != config.AUDIO.INTERFACE_INDEX) ? config.AUDIO.INTERFACE_INDEX : -1);
+var audioDeviceLatency = !isNaN(program.latency) ? program.latency : config.AUDIO.LATENCY; //Default audio device latency, mostly for bluetooth devices
+var lightStripHandler = LightStripDrivers_1.default.load(LIGHT_STRIP_DRIVER);
 /****************************************Audio signal management*************************************/
-let audioHandler = null;
-const createAudioShell = (frequencyBand: string) => {
+var audioHandler = null;
+var createAudioShell = function (frequencyBand) {
     destroyAudioShell();
     if (handleAudio && !audioHandler) {
-        audioHandler = AudioDrivers.load(AUDIO_DRIVER);
+        audioHandler = AudioDrivers_1.default.load(AUDIO_DRIVER);
         audioHandler.startListening(audioDevice, audioDeviceLatency, {
-            frequencyBand:
-                (!frequencyBand) ? [0, 20000] : (frequencyBand.split(':')).map((e) => parseInt(e))
-        }, (message) => {
+            frequencyBand: (!frequencyBand) ? [0, 20000] : (frequencyBand.split(':')).map(function (e) { return parseInt(e); })
+        }, function (message) {
             if (message.hasOwnProperty("error")) {
                 console.error("Error: %s", message.error);
                 console.error("Server will now exit");
@@ -83,94 +76,83 @@ const createAudioShell = (frequencyBand: string) => {
         });
     }
 };
-const destroyAudioShell = () => {
+var destroyAudioShell = function () {
     if (handleAudio && audioHandler) {
         audioHandler.stopListening();
         audioHandler = null;
     }
 };
-const handleAudioRms = (value) => {
+var handleAudioRms = function (value) {
     LIU_Engine.AudioEffect.current_rms_value = value;
 };
-
-
 /****************************************Initialization*************************************/
-lightStripHandler.init(LEDS_COUNT,{
+lightStripHandler.init(LEDS_COUNT, {
     SPI: Object.assign({}, config.SPI)
 }).open();
-const stack = new Stack();
-const app = express();
+var stack = new Stack_1.default();
+var app = express();
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
 app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({extended: true})); // support encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(function (err, req, res, next) {
-    if (err) console.error(err.stack);
+    if (err)
+        console.error(err.stack);
     res.status(500).send('Something broke!');
 });
-let server = null;
-let secure_server = null;
-let loopTimer = null; //Externalize to stop it where no effect is set
-let enforcedStartTime = new Date().getTime(); //To allow effects resuming in case they have been interrupted by a greater priority effect
-
-
+var server = null;
+var secure_server = null;
+var loopTimer = null; //Externalize to stop it where no effect is set
+var enforcedStartTime = new Date().getTime(); //To allow effects resuming in case they have been interrupted by a greater priority effect
 /*
 * Firing up the Interface Server
 */
-ControlInterfaceServer.init(app);
-
-
+ControlInterfaceServer_1.default.init(app);
 /**
  * Exit the script
  * - Switch off all the LEDs
  * - Stopping HTTP server
  */
-const gracefullyExit = () => {
+var gracefullyExit = function () {
     console.error('Gracefully exit');
     lightStripHandler.close();
-    ControlInterfaceServer.close();
+    ControlInterfaceServer_1.default.close();
     process.exit(0);
 };
-
-
 /**
  * Save an effect configuration to the backup file
  * @param {JSON} data The effect configuration
  */
-const saveLastEffect = (data: any): void => {
-    ControlInterfaceServer.setLastEffect(data);
+var saveLastEffect = function (data) {
+    ControlInterfaceServer_1.default.setLastEffect(data);
 };
-
-
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', function (err) {
     console.error('Caught exception: %s', err.stack);
     gracefullyExit();
 });
-
-
 /**
  * Handle Script exit
  */
-['exit', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'].forEach((event) => {
-    process.on(<any>event, function () {
+['exit', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'].forEach(function (event) {
+    process.on(event, function () {
         gracefullyExit();
     });
 });
-
 /**
  * Launch a forever loop that will update all LIU_Engine.LEDs at each iteration
  */
-const createLoop = () => {
-    if (null != loopTimer) return;
-    let first = true;
-    loopTimer = setInterval(() => {
-        LIU_Engine.LEDAnimator.processLEDs((leds: Array<LIU_Engine.LED>) => {
-            let colors = [];
-            for (let j = 0; j < leds.length; j++) {
-                let color = leds[j].color;
+var createLoop = function () {
+    if (null != loopTimer)
+        return;
+    var first = true;
+    loopTimer = setInterval(function () {
+        LIU_Engine.LEDAnimator.processLEDs(function (leds) {
+            var colors = [];
+            for (var j = 0; j < leds.length; j++) {
+                var color = leds[j].color;
                 colors[j] = [];
                 colors[j][rgbOrder[0]] = color.R;
                 colors[j][rgbOrder[1]] = color.G;
@@ -181,18 +163,15 @@ const createLoop = () => {
         first = false;
     }, LEDS_REFRESH_TIME);
 };
-
-
 /**
  * Stopping the forever loop
  */
-const stopLoop = () => {
-    if (loopTimer) clearInterval(loopTimer);
+var stopLoop = function () {
+    if (loopTimer)
+        clearInterval(loopTimer);
     loopTimer = null;
     destroyAudioShell();
 };
-
-
 /**
  * Appending an effect to the stack
  * @param config   The effect configuration array, eg:
@@ -211,35 +190,36 @@ const stopLoop = () => {
  * @param {number} priority   default 0,   If set, it will place the effect in the stack depending on its priority
  *                                         The effect with highest priority is set to current and will run until it ends
  */
-const handleEffect = (config: any, timeLimit: number | null, priority: number | null) => {
+var handleEffect = function (config, timeLimit, priority) {
     createLoop();
-    let time = new Date().getTime();
-    let id = time + "__" + Math.floor(Math.random() * 100000000); //Generates an ID
-    if (isNaN(timeLimit)) { //Overrides all previous effects, will run forever (until a new effect is stacked)
+    var time = new Date().getTime();
+    var id = time + "__" + Math.floor(Math.random() * 100000000); //Generates an ID
+    if (isNaN(timeLimit)) {
         stack.reset();
     }
-    if (!timeLimit) { // If we don't do this, the effect would never run
+    if (!timeLimit) {
         timeLimit = null;
     }
-    let parsedConfig = [];
-    let hasAudioEffect = false;
-    config.forEach((currentConfig) => {
+    var parsedConfig = [];
+    var hasAudioEffect = false;
+    config.forEach(function (currentConfig) {
         if (currentConfig.name == "audio") {
             hasAudioEffect = true;
             createAudioShell(currentConfig.options['frequency-band']);
         }
         parsedConfig.push(new LIU_Engine.EffectConfig(currentConfig.name, currentConfig.options));
     });
-    let lastEffect = stack.push(id, parsedConfig, priority, time);
+    var lastEffect = stack.push(id, parsedConfig, priority, time);
     enforcedStartTime = lastEffect.startedTime;
     LIU_Engine.LEDAnimator.setEffects(lastEffect.object, true);
     if (null !== timeLimit) {
-        setTimeout(() => {
-            if (hasAudioEffect) destroyAudioShell();
-            let wasLast = stack.isLast(id);
+        setTimeout(function () {
+            if (hasAudioEffect)
+                destroyAudioShell();
+            var wasLast = stack.isLast(id);
             stack.remove(id);
             if (null != stack.getLast() && wasLast) {
-                let restoredEffect = stack.getLast();
+                var restoredEffect = stack.getLast();
                 enforcedStartTime = restoredEffect.startedTime;
                 LIU_Engine.LEDAnimator.setEffects(restoredEffect.object);
             }
@@ -250,50 +230,42 @@ const handleEffect = (config: any, timeLimit: number | null, priority: number | 
         }, timeLimit);
     }
     //Write a backup to restore it the next time the script will be launched
-    saveLastEffect({config: config, timeLimit: timeLimit, priority: priority});
+    saveLastEffect({ config: config, timeLimit: timeLimit, priority: priority });
 };
-
-
 /*************************************************EFFECTS MANAGER LAUNCHING********************************************/
 LIU_Engine.LEDController.createAll(LEDS_COUNT);
 lightStripHandler.clear(); //Make all leds switched off
-
-if(config.PLAY_LAST_EFFECT_ON_STARTUP) {
+if (config.PLAY_LAST_EFFECT_ON_STARTUP) {
     // Trying to restore last effect if it has been saved
-    const restored = (ControlInterfaceServer.getLastEffect());
+    var restored = (ControlInterfaceServer_1.default.getLastEffect());
     if (null !== restored) {
         handleEffect(restored.config, restored.timeLimit, restored.priority);
     }
 }
-
-
 /************************************************HTTP REQUESTS HANDLER*************************************************/
-const reset = () => {
+var reset = function () {
     stopLoop();
     stack.reset();
     lightStripHandler.clear();
 };
-
-const toggle = () => {
-    if(stack.getLast()) {
+var toggle = function () {
+    if (stack.getLast()) {
         stack.reset();
         lightStripHandler.clear();
-    } else {
-        const restored = (ControlInterfaceServer.getLastEffect());
+    }
+    else {
+        var restored = (ControlInterfaceServer_1.default.getLastEffect());
         if (null !== restored) {
             handleEffect(restored.config, restored.timeLimit, restored.priority);
         }
     }
 };
-
 /*
 * Check if device server is online
 */
 app.get('/ping', function (req, res) {
     res.send('online');
 });
-
-
 /*
 * Reset the stack effect & switch off all LEDs
 */
@@ -301,8 +273,6 @@ app.post('/reset', function (req, res) {
     reset();
     res.send('Reset done');
 });
-
-
 /*
 * Reset the stack effect & switch off all LEDs
 */
@@ -310,8 +280,6 @@ app.post('/toggle', function (req, res) {
     toggle();
     res.send('Toggle done');
 });
-
-
 /*
 * Appending a new effects set to the stack or ignoring it depending on its priority
 *
@@ -324,12 +292,12 @@ app.post('/toggle', function (req, res) {
 * }
 */
 app.post('/stack', function (req, res) {
-    let err = null;
+    var err = null;
     try {
-        let config = req.body.config;
-        let timeLimit = req.body.timeLimit || EffectsUtils.evaluateEffectDuration(config);
-        let priority = req.body.priority || 0;
-        handleEffect(config, timeLimit, priority);
+        var config_1 = req.body.config;
+        var timeLimit = req.body.timeLimit || EffectsUtils_1.default.evaluateEffectDuration(config_1);
+        var priority = req.body.priority || 0;
+        handleEffect(config_1, timeLimit, priority);
     }
     catch (e) {
         err = e;
@@ -339,44 +307,44 @@ app.post('/stack', function (req, res) {
         res.send(err || 'sent');
     }
 });
-
-const showServerStartedMessage = (address, port, secure) => {
-    const protocol = secure ? 'https' : 'http';
+var showServerStartedMessage = function (address, port, secure) {
+    var protocol = secure ? 'https' : 'http';
     console.error("The server is online, you can start to send requests at : %s://%s:%s", protocol, address, port);
 };
-
 secure_server = https.createServer(credentials, app);
 server = http.createServer(app);
-
 if (!program.unsecured && config.HTTPS_SERVER) {
     secure_server.listen(usedPort_secure, function () {
-        let host = secure_server.address().address;
-        let port = secure_server.address().port;
+        var host = secure_server.address().address;
+        var port = secure_server.address().port;
         showServerStartedMessage('<server-address>', usedPort_secure, true);
     });
 }
-
 if (!program.secured && config.HTTP_SERVER) {
     server.listen(usedPort, function () {
-        let host = server.address().address;
-        let port = server.address().port;
+        var host = server.address().address;
+        var port = server.address().port;
         showServerStartedMessage('<server-address>', usedPort, false);
     });
 }
-
 /**
  * Expose some methods to other modules
  */
-export default class IndexAPI {
-    static reset() {
-        reset();
+var IndexAPI = /** @class */ (function () {
+    function IndexAPI() {
     }
-
-    static handleEffect(config, timeLimit, priority) {
+    IndexAPI.reset = function () {
+        reset();
+    };
+    IndexAPI.handleEffect = function (config, timeLimit, priority) {
         if (!config) {
             reset();
-        } else {
+        }
+        else {
             handleEffect(config, timeLimit, priority);
         }
-    }
-}
+    };
+    return IndexAPI;
+}());
+exports.default = IndexAPI;
+//# sourceMappingURL=index.js.map
