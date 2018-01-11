@@ -276,8 +276,7 @@ const reset = () => {
 
 const toggle = () => {
     if(stack.getLast()) {
-        stack.reset();
-        lightStripHandler.clear();
+        reset();
     } else {
         const restored = (ControlInterfaceServer.getLastEffect());
         if (null !== restored) {
