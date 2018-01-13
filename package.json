@@ -1,7 +1,7 @@
 {
   "name": "@b-stud/lightitup-server",
   "author": "Bilel OURAL <bilel.oural@b-stud.com> (http://www.b-stud.com)",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A wrapper for lightitup-engine offering useful features",
   "main": "dist/index.js",
   "scripts": {
