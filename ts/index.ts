@@ -215,8 +215,10 @@ const handleEffect = (config: any, timeLimit: number | null, priority: number | 
     createLoop();
     let time = new Date().getTime();
     let id = time + "__" + Math.floor(Math.random() * 100000000); //Generates an ID
-    if (isNaN(timeLimit)) { //Overrides all previous effects, will run forever (until a new effect is stacked)
-        stack.reset();
+    if(null == stack.getLast() || stack.getLast().priority <= priority) {
+        if (isNaN(timeLimit)) { //Overrides all previous effects, will run forever (until a new effect is stacked)
+            stack.reset();
+        }
     }
     if (!timeLimit) { // If we don't do this, the effect would never run
         timeLimit = null;

@@ -12,7 +12,7 @@ export default class Effect {
         effect.id = row.id || null;
         effect.name = row.name;
         effect.config = row.config;
-        effect.timeLimit = row.timeLimit;
+        effect.timeLimit = row.timelimit;
         effect.priority = row.priority;
         effect.creationDate = row.creationDate;
         return effect;
