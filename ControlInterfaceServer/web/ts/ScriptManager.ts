@@ -60,7 +60,7 @@ export default class ScriptManager {
                     $modalElt.find('input[name="name"]').val(effect.name);
                     $modalElt.find('textarea[name="config"]').val(JSON.stringify(JSON.parse(effect.config), null, 2));
                     $modalElt.find('input[name="priority"]').val(effect.priority);
-                    $modalElt.find('input[name="timeLimit"]').val(effect.timeLimit);
+                    $modalElt.find('input[name="timeLimit"]').val(effect.timelimit);
                 } else {
                     $btnSave.data('id', null);
                     form.reset();
