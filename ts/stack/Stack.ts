@@ -6,6 +6,13 @@ import StackPiece from './StackObject';
 export default class Stack{
 
 	stack: Array<any> = [];
+	maxStackSize = null;
+
+	constructor(maxStackSize: number = null){
+	    if(null != maxStackSize){
+	        this.maxStackSize = Math.max(1, maxStackSize);
+        }
+	}
 
     /**
      * Clear all items
@@ -34,6 +41,11 @@ export default class Stack{
 		let obj = new StackPiece(id, object, priority, startedTime);
 		if(!isNaN(index)) this.stack.splice(index, 0, obj);
 		else this.stack.unshift(obj);
+
+		if (null != this.maxStackSize && this.stack.length >= this.maxStackSize) {
+		    this.stack.shift();
+        }
+
         return this.getLast();
 	}
 

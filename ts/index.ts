@@ -98,7 +98,8 @@ const handleAudioRms = (value) => {
 lightStripHandler.init(LEDS_COUNT,{
     SPI: Object.assign({}, config.SPI)
 }).open();
-const stack = new Stack();
+const MAX_STACK_SIZE = 20;
+const stack = new Stack(MAX_STACK_SIZE);
 const app = express();
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -215,11 +216,15 @@ const handleEffect = (config: any, timeLimit: number | null, priority: number | 
     createLoop();
     let time = new Date().getTime();
     let id = time + "__" + Math.floor(Math.random() * 100000000); //Generates an ID
+    /*
+    Now with the 'unstack' feature, we want to be able to restore a previous effect
+    event if the current one was expected to run forever, so we must not reset the stack anymore
     if(null == stack.getLast() || stack.getLast().priority <= priority) {
         if (isNaN(timeLimit)) { //Overrides all previous effects, will run forever (until a new effect is stacked)
             stack.reset();
         }
     }
+    */
     if (!timeLimit) { // If we don't do this, the effect would never run
         timeLimit = null;
     }
@@ -316,7 +321,7 @@ app.post('/toggle', function (req, res) {
 /*
 * Appending a new effects set to the stack or ignoring it depending on its priority
 *
-* The request must contain a JSON body as follow:
+* The request must contain a JSON body as the following:
 * {
 *   "config":    Array<EffectConfig>,
 * 	"timeLimit": integer (ms)|null,  <optional>   //If not null, effect will be stopped after this time value
@@ -338,6 +343,45 @@ app.post('/stack', function (req, res) {
     }
     finally {
         res.send(err || 'sent');
+    }
+});
+
+/**
+* Unstack the effect currently being played (top of the stack)
+* The request can contain a JSON body as the following:
+* {
+*   "priority_min":    integer, <optional> If set, the effect currently being played will be unstacked only if it has a priority greater than or equal the value specified
+*   "priority_max":    integer, <optional> If set, the effect currently being played will be unstacked only if it has a priority lesser than or equal the value specified
+* }
+ */
+app.post('/unstack', function (req, res) {
+    let err = null;
+    try {
+        let currentEffect = stack.getLast();
+        const minPriority = req.body.priority_min?parseInt(req.body.priority_min):null;
+        const maxPriority = req.body.priority_max?parseInt(req.body.priority_max):null;
+        const currentPriority = currentEffect.priority;
+
+        if((minPriority === null || currentPriority >= minPriority) && (maxPriority === null || currentPriority <= maxPriority)) {
+            destroyAudioShell();
+            stack.remove(currentEffect.id);
+            if (null != stack.getLast()) {
+                let restoredEffect = stack.getLast();
+                enforcedStartTime = restoredEffect.startedTime;
+                LIU_Engine.LEDAnimator.setEffects(restoredEffect.object);
+            }
+            else if (null == stack.getLast()) {
+                lightStripHandler.clear();
+                stopLoop();
+            }
+        }
+    }
+    catch (e) {
+        err = e;
+        console.error(e);
+    }
+    finally {
+        res.send(err || 'done');
     }
 });
 

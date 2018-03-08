@@ -209,28 +209,17 @@ a simple API is available.
 - **Method** POST
 - **Body**
 
+### Unstack the effect currently being played (top of the stack)
+
+- **URL** /unstack
+- **Header** Content-Type: application/json
+- **Method** POST
+- **Body**
+
 ```javascript
 {
-    "config":    [
-                   {
-                     "name": "simple-color",
-                     "options": {
-                       "activated": true,
-                       "delay": 0,
-                       "duration": 3000,
-                       "waitAtEnd": 0,
-                       "repeat": null,
-                       "color": [
-                         0,
-                         80,
-                         250
-                       ]
-                     }
-                   }
-                 ],            // Array of effects bricks as exported from the configurator
-    "timeLimit": integer|null,  // <optional>   //If not null, effect will be stopped after this milliseconds time value
-    "priority":  integer|null   // <optional> , //If not null, the effect will be positioned in the stack depending on its priority, the greatest priority wins
-                                // Note: The effect that "losts" is not removed, it will resume after the new one is finished (if the new one it's a finite time effect).
+    "priority_min": integer|null,  // <optional>   // If set, the effect currently being played will be unstacked only if it has a priority greater than or equal the value specified
+    "priority_max":  integer|null   // <optional> , // If set, the effect currently being played will be unstacked only if it has a priority lesser than or equal the value specified
 }
 ```
 
