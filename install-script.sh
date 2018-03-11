@@ -64,6 +64,7 @@ yes | apt-get install python python-pip python-dev
 
 echo '=========================== Installing python required libraries ==========================='
 yes | apt-get install libasound2-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg libav-tools
+yes | apt-get install python-setuptools
 yes | apt-get install python-pyaudio
 yes | apt-get install python-scipy
 pip install Adafruit_WS2801

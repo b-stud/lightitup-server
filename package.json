@@ -5,7 +5,7 @@
   "description": "A wrapper for lightitup-engine offering useful features",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc --p ts && cd ControlInterfaceServer/web && webpack",
+    "build": "tsc --p ts && cd ControlInterfaceServer/web && tsc && webpack",
     "start": "npm run build && node dist/index.js"
   },
   "repository": {

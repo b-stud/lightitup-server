@@ -2,5 +2,6 @@ node_modules
 psd
 .idea
 ControlInterfaceServer/web/.sass-cache
+ControlInterfaceServer/web/dist
 documentation/img/large
 dist
