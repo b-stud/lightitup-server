@@ -10704,9 +10704,10 @@ var ScriptManager = /** @class */ (function () {
                 $colorPickerBtn.find('>div').css({ 'background': hex, 'borderColor': hex });
                 $previewColorElt.css('background', hex);
                 $.ajax({
+                    contentType: 'application/json',
                     type: 'POST',
                     url: '/stack',
-                    data: {
+                    data: JSON.stringify({
                         timeLimit: null,
                         priority: 0,
                         config: [{
@@ -10720,7 +10721,7 @@ var ScriptManager = /** @class */ (function () {
                                     "color": color
                                 }
                             }]
-                    }
+                    })
                 });
                 lastRequestTime = time;
             };

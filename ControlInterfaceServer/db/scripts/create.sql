@@ -5,7 +5,8 @@ CREATE TABLE effects
     creation_time TIMESTAMP NOT NULL,
     config TEXT NOT NULL,
     timelimit INTEGER,
-    priority INTEGER
+    priority INTEGER,
+    applyToSlavesDevices INTEGER DEFAULT 0
 );
 
 CREATE TABLE scheduled_events

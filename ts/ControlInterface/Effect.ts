@@ -6,6 +6,7 @@ export default class Effect {
     timeLimit: number|null;
     priority: number|null;
     creationDate: number;
+    applyToSlavesDevices: number = 0;
 
     static fromRow(row: any): Effect{
         const effect = new Effect();
@@ -15,6 +16,7 @@ export default class Effect {
         effect.timeLimit = row.timelimit;
         effect.priority = row.priority;
         effect.creationDate = row.creationDate;
+        effect.applyToSlavesDevices = row.applyToSlavesDevices;
         return effect;
     }
 
@@ -32,6 +34,9 @@ export default class Effect {
    }
    setCreationDate(creationDate){
        this.creationDate = creationDate;
+   }
+   setApplyToSlavesDevices(applyToSlavesDevices){
+       this.applyToSlavesDevices = applyToSlavesDevices;
    }
 
 }

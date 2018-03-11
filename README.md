@@ -13,6 +13,7 @@
 [6.1 Adding light effects to your list](#61-adding-light-effects-to-your-list)<br/>
 [6.2 Priorities](#62-priorities)<br/>
 [6.3 Automatizing effects with the time scheduler](#63-automatizing-effects-with-the-time-scheduler)<br/>
+[6.4 Controlling several devices at the same time](#64-controlling-several-devices-at-the-same-time)<br/>
 [7. API](#7-api)<br/>
 [8. License](#8-license)<br/>
 [9. Author](#9-author)<br/>
@@ -23,7 +24,8 @@
 Light'It up server is a node server for Raspberry devices that let you easily animate your light strip. It integrates
 the [Light'It Up engine](https://github.com/b-stud/lightitup-engine) to use existing or create customized light effects.
 It uses HTTP requests and expose a very simple API, which means you can now easily integrate your lightstrip inside any domotics solution.
-As described below, the server will offer you great features like a time scheduler, effects priorities management and more.
+As described below, the server will offer you great features like a time scheduler, effects priorities management, multi devices control
+ and more..
 
 ## 2. Prerequisites
 
@@ -177,6 +179,28 @@ you could then schedule a Static Blue at 10pm from Monday to Friday, and so on..
 To use the scheduler, you just to have to click the "Scheduler" button on the interface.
 Then you can very simply setup all you want to.
 
+#### 6.4 Controlling several devices at the same time
+
+Sometimes devices are not close enough to control them with same RPi device, also, you may want to synchronize devices located in different places.
+
+For this purpose, you have to complete the list of the hosts that you want to control inside the `default-config.yml` file :
+
+`SYNCHRONIZED_DEVICES_HOSTS: []`
+
+For example you could have something like this :
+
+```yaml
+# ...
+SYNCHRONIZED_DEVICES_HOSTS:
+    - https://mydevice.local:8000
+    - http://192.168.1.14:7400
+    # - ... And so on
+```
+
+Note that a request coming from the master to a slave won't be forwarded anymore by the slave even if it has itself a completed list
+of devices hosts to control.
+
+Please also note that the synchronized control does only concern the effects (un)stacked on the fly, toggling, and resetting options.
 
 
 ## 7. API
@@ -195,19 +219,43 @@ a simple API is available.
 - **URL** /reset
 - **Method** POST
 - **Return** 200, `Reset done`
+- **Header** Content-Type: application/json
+- **Body**
+
+```javascript
+{
+    "apply_to_slaves": true|false  // <optional>   // Propagate the effect to slaves devices or not
+}
+```
 
 ### Toggle the lightstrip (reset / last effect set)
 
 - **URL** /toggle
 - **Method** POST
 - **Return** 200, `Toggle done`
+- **Header** Content-Type: application/json
+- **Body**
 
-### Setup an effect on the fly (not saved in your list)
+```javascript
+{
+    "apply_to_slaves": true|false  // <optional>   // Propagate the effect to slaves devices or not
+}
+```
+
+### Setup(stack) an effect on the fly (not saved in your list)
 
 - **URL** /stack
 - **Header** Content-Type: application/json
 - **Method** POST
 - **Body**
+- **Header** Content-Type: application/json
+- **Body**
+
+```javascript
+{
+    "apply_to_slaves": true|false  // <optional>   // Propagate the effect to slaves devices or not
+}
+```
 
 ### Unstack the effect currently being played (top of the stack)
 
@@ -219,7 +267,8 @@ a simple API is available.
 ```javascript
 {
     "priority_min": integer|null,  // <optional>   // If set, the effect currently being played will be unstacked only if it has a priority greater than or equal the value specified
-    "priority_max":  integer|null   // <optional> , // If set, the effect currently being played will be unstacked only if it has a priority lesser than or equal the value specified
+    "priority_max":  integer|null,   // <optional> , // If set, the effect currently being played will be unstacked only if it has a priority lesser than or equal the value specified
+    "apply_to_slaves": true|false  // <optional>   // Propagate the effect to slaves devices or not
 }
 ```
 

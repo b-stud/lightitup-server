@@ -16,3 +16,4 @@ SPI:
   DATA_PIN: 10
   DEVICE: 0 # For libraries using PORT.DEVICE scheme (Port.Device 0.0 corresponds to Clock PIN 23 and Data PIN 24)
   PORT: 0
+SYNCHRONIZED_DEVICES_HOSTS: [] # An optional list of other devices to control (port must be specified)

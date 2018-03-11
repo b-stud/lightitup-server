@@ -5,6 +5,7 @@
  * Should be called with `node dist/index.ts <http-port> <handle-audio> <audio-device-index> <audio-device-latency>` after having compiled with typescript
  */
 import Stack from './stack/Stack';
+import NetworkForwarder from './utils/NetworkForwarder';
 import EffectsUtils from './utils/EffectsUtils';
 import AudioDrivers from './handlers/audio/AudioDrivers';
 import LightStripDrivers from "./handlers/lightstrips/LightStripDrivers";
@@ -55,6 +56,7 @@ const handleAudio = program.audio;
 const audioDevice = (handleAudio && !isNaN(program.device)) ? program.device : ((undefined != config.AUDIO.INTERFACE_INDEX) ? config.AUDIO.INTERFACE_INDEX : -1);
 const audioDeviceLatency = !isNaN(program.latency) ? program.latency : config.AUDIO.LATENCY; //Default audio device latency, mostly for bluetooth devices
 const lightStripHandler = LightStripDrivers.load(LIGHT_STRIP_DRIVER);
+const forwarder = new NetworkForwarder(config.SYNCHRONIZED_DEVICES_HOSTS); // Which hosts to forward requests to
 
 
 /****************************************Audio signal management*************************************/
@@ -131,9 +133,12 @@ ControlInterfaceServer.init(app);
  */
 const gracefullyExit = () => {
     console.error('Gracefully exit');
-    lightStripHandler.close();
-    ControlInterfaceServer.close();
-    process.exit(0);
+    forwarder.reset();
+    setTimeout(() => {
+        lightStripHandler.close();
+        ControlInterfaceServer.close();
+        process.exit(0);
+    }, 2000);
 };
 
 
@@ -270,6 +275,7 @@ if(config.PLAY_LAST_EFFECT_ON_STARTUP) {
     const restored = (ControlInterfaceServer.getLastEffect());
     if (null !== restored) {
         handleEffect(restored.config, restored.timeLimit, restored.priority);
+        forwarder.stack(restored.config, restored.timeLimit, restored.priority);
     }
 }
 
@@ -304,15 +310,21 @@ app.get('/ping', function (req, res) {
 * Reset the stack effect & switch off all LEDs
 */
 app.post('/reset', function (req, res) {
+    if(req.body.apply_to_slaves) {
+        forwarder.reset();
+    }
     reset();
     res.send('Reset done');
 });
 
 
 /*
-* Reset the stack effect & switch off all LEDs
+* Toggle state (ON/OFF)
 */
 app.post('/toggle', function (req, res) {
+    if(req.body.apply_to_slaves) {
+        forwarder.toggle();
+    }
     toggle();
     res.send('Toggle done');
 });
@@ -336,6 +348,9 @@ app.post('/stack', function (req, res) {
         let timeLimit = req.body.timeLimit || EffectsUtils.evaluateEffectDuration(config);
         let priority = req.body.priority || 0;
         handleEffect(config, timeLimit, priority);
+        if(req.body.apply_to_slaves) {
+            forwarder.stack(config, timeLimit, priority);
+        }
     }
     catch (e) {
         err = e;
@@ -361,6 +376,10 @@ app.post('/unstack', function (req, res) {
         const minPriority = req.body.priority_min?parseInt(req.body.priority_min):null;
         const maxPriority = req.body.priority_max?parseInt(req.body.priority_max):null;
         const currentPriority = currentEffect.priority;
+
+        if(req.body.apply_to_slaves) {
+            forwarder.unstack(minPriority, maxPriority);
+        }
 
         if((minPriority === null || currentPriority >= minPriority) && (maxPriority === null || currentPriority <= maxPriority)) {
             destroyAudioShell();
@@ -415,6 +434,12 @@ if (!program.secured && config.HTTP_SERVER) {
 export default class IndexAPI {
     static reset() {
         reset();
+    }
+    static propagateStack(config, timeLimit, priority) {
+        forwarder.stack(config, timeLimit, priority);
+    }
+    static propagateReset() {
+        forwarder.reset();
     }
 
     static handleEffect(config, timeLimit, priority) {

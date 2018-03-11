@@ -143,19 +143,19 @@ export default class ControlInterfaceServer {
         effect.setTimeLimit(timeLimit);
         effect.setPriority(priority);
         effect.setCreationDate(new Date().getTime());
-
+        effect.setApplyToSlavesDevices(body.slaves?1:0);
 
         return effect;
     }
 
     private static save(effect: Effect){
-        ControlInterfaceServer.database.prepare("INSERT INTO effects (name, creation_time, config, timelimit, priority) VALUES (?, ?, ?, ?, ?)")
-            .run(effect.name, effect.creationDate, effect.config, effect.timeLimit, effect.priority);
+        ControlInterfaceServer.database.prepare("INSERT INTO effects (name, creation_time, config, timelimit, priority, applyToSlavesDevices) VALUES (?, ?, ?, ?, ?, ?)")
+            .run(effect.name, effect.creationDate, effect.config, effect.timeLimit, effect.priority, effect.applyToSlavesDevices);
     }
 
     private static update(effect: Effect){
-        ControlInterfaceServer.database.prepare("UPDATE effects SET name = ?, config = ?,  timelimit = ?, priority = ? WHERE id = ?")
-            .run(effect.name, effect.config, effect.timeLimit, effect.priority, effect.id);
+        ControlInterfaceServer.database.prepare("UPDATE effects SET name = ?, config = ?,  timelimit = ?, priority = ?, applyToSlavesDevices = ? WHERE id = ?")
+            .run(effect.name, effect.config, effect.timeLimit, effect.priority, effect.applyToSlavesDevices, effect.id);
     }
 
     private static loadById(id: number): Effect|null{
@@ -189,7 +189,11 @@ export default class ControlInterfaceServer {
             if(req.query.timeLimit){ // TimeLimit overriding
                 timeLimit = parseInt(req.query.timeLimit);
             }
-            IndexAPI.handleEffect(JSON.parse(effect.config), timeLimit, priority);
+            const config = JSON.parse(effect.config);
+            IndexAPI.handleEffect(config, timeLimit, priority);
+            if(effect.applyToSlavesDevices == 1) {
+                IndexAPI.propagateStack(config, timeLimit, priority);
+            }
             return ControlInterfaceServer.createSuccessResponse(res, 'done');
         }
     }
@@ -198,7 +202,11 @@ export default class ControlInterfaceServer {
         let effect = null;
         if(null === (effect = ControlInterfaceServer.loadById(effectId))) {
         } else {
-            IndexAPI.handleEffect(JSON.parse(effect.config), parseInt(effect.timeLimit), parseInt(effect.priority));
+            const config = JSON.parse(effect.config), timeLimit = parseInt(effect.timeLimit), priority = parseInt(effect.priority);
+            IndexAPI.handleEffect(config, timeLimit, priority);
+            if(effect.applyToSlavesDevices == 1) {
+                IndexAPI.propagateStack(config, timeLimit, priority);
+            }
         }
     }
 

@@ -61,8 +61,13 @@ export default class Utils {
     static objectifyForm(formArray) {//serialize data function
         const returnArray = {};
         for (let i = 0; i < formArray.length; i++) {
-            if (formArray[i].nodeName != "BUTTON")
-                returnArray[formArray[i]['name']] = $.trim(formArray[i]['value']);
+            if (formArray[i].nodeName != "BUTTON") {
+                if (formArray[i].nodeName == "INPUT" && formArray[i].type=="checkbox") {
+                    returnArray[formArray[i]['name']] = (<any>formArray[i]).checked?1:"";
+                } else {
+                    returnArray[formArray[i]['name']] = $.trim(formArray[i]['value']);
+                }
+            }
         }
         return returnArray;
     }

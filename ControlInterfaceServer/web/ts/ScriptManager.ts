@@ -58,9 +58,12 @@ export default class ScriptManager {
                     $btnSave.data('id', id);
                     //Fill fields
                     $modalElt.find('input[name="name"]').val(effect.name);
-                    $modalElt.find('textarea[name="config"]').val(JSON.stringify(JSON.parse(effect.config), null, 2));
+                    $modalElt.find('textarea[name="config"]').val(
+                        JSON.stringify(JSON.parse(effect.config), null, 2));
                     $modalElt.find('input[name="priority"]').val(effect.priority);
                     $modalElt.find('input[name="timeLimit"]').val(effect.timelimit);
+                    $modalElt.find('input[name="slaves"]').prop('checked',
+                        parseInt(effect.applyToSlavesDevices) == 1 ? true : false);
                 } else {
                     $btnSave.data('id', null);
                     form.reset();
@@ -308,11 +311,13 @@ export default class ScriptManager {
                 $colorPickerBtn.find('>div').css({'background': hex, 'borderColor': hex});
                 $previewColorElt.css('background', hex);
                 $.ajax({
+                    contentType: 'application/json',
                     type: 'POST',
                     url: '/stack',
-                    data: {
+                    data: JSON.stringify({
                         timeLimit: null,
                         priority: 0,
+                        apply_to_slaves: true,
                         config: [{
                             "name": "simple-color",
                             "options": {
@@ -324,7 +329,7 @@ export default class ScriptManager {
                                 "color": color
                             }
                         }]
-                    }
+                    })
                 });
                 lastRequestTime = time;
             };

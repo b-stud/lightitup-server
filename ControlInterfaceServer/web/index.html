@@ -42,12 +42,18 @@
             </div>
             <div>
                 <div>Default time limit (ms)</div>
-                <div><input type="number" name="timeLimit" min="0" placeholder="Let this field empty to run forever"/>
+                <div >
+                    <input style="width: auto;" type="number"
+                           name="timeLimit" min="0" placeholder="Let this field empty to run forever"/>
                 </div>
             </div>
             <div>
                 <div>Default priority</div>
                 <div><input type="number" name="priority" min="0" value="0" placeholder="0 by default"/></div>
+            </div>
+            <div>
+                <div>Propagate to slaves</div>
+                <div><input type="checkbox" name="slaves" checked="checked" /></div>
             </div>
             <div>
                 <div></div>
