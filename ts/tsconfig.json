@@ -15,9 +15,5 @@
       "es2017",
       "dom"
     ]
-  },
-  "exclude": [
-    "../ControlInterfaceServer/web",
-    "../node_modules"
-  ]
+  }
 }

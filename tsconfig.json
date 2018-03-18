@@ -1,20 +1,22 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "allowJs": true,
-    "outDir": "js",
+    "outDir": "./dist/node_modules/@b-stud/lightitup-engine/src",
     "sourceMap": true,
-    "declaration": false,
+    "declaration": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
     "typeRoots": [
-      "../../node_modules/@types"
+      "./node_modules/@types"
     ],
     "lib": [
       "es2017",
       "dom"
     ]
-  }
+  },
+  "include": [
+    "./node_modules/@b-stud/lightitup-engine/src/**/*"
+  ]
 }

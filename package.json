@@ -5,7 +5,7 @@
   "description": "A wrapper for lightitup-engine offering useful features",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc --p ts && cd ControlInterfaceServer/web && tsc && webpack",
+    "build": "tsc && tsc --p ts && cd ControlInterfaceServer/web && tsc && webpack",
     "start": "npm run build && node dist/index.js"
   },
   "repository": {
@@ -14,7 +14,7 @@
   },
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
-    "@b-stud/lightitup-engine": "^1.0.0",
+    "@b-stud/lightitup-engine": "^1.0.2",
     "better-sqlite3": "^4.0.3",
     "body-parser": "^1.18.2",
     "commander": "^2.11.0",

@@ -384,8 +384,8 @@ app.post('/unstack', function (req, res) {
         if((minPriority === null || currentPriority >= minPriority) && (maxPriority === null || currentPriority <= maxPriority)) {
             destroyAudioShell();
             stack.remove(currentEffect.id);
-            if (null != stack.getLast()) {
-                let restoredEffect = stack.getLast();
+            let restoredEffect = stack.getLast();
+            if (null != restoredEffect) {
                 enforcedStartTime = restoredEffect.startedTime;
                 LIU_Engine.LEDAnimator.setEffects(restoredEffect.object);
             }

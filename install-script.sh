@@ -26,6 +26,9 @@ echo '=========================== Updating system ==========================='
 yes | apt-get update
 yes | apt-get upgrade
 
+echo '=========================== Installing make, g++ ==========================='
+yes | apt-get install make g++
+
 echo '=========================== Installing Git ==========================='
 yes | apt-get install git-core
 
@@ -63,13 +66,12 @@ echo '=========================== Installing python & pip ======================
 yes | apt-get install python python-pip python-dev
 
 echo '=========================== Installing python required libraries ==========================='
-yes | apt-get install libasound2-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg libav-tools
-yes | apt-get install python-setuptools
-yes | apt-get install python-pyaudio
-yes | apt-get install python-scipy
+yes | apt-get install python-spidev libasound2-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg libav-tools
+yes | apt-get install python-setuptools python-pyaudio python-scipy
+pip install wheel
 pip install Adafruit_WS2801
 pip install Adafruit_GPIO
-pip install RPi.GPIO
+yes | apt-get install python-rpi.gpio
 pip install rpi_ws281x
 
 echo '=========================== Creating log files & directory ==========================='
