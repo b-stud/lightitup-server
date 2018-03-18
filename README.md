@@ -253,7 +253,24 @@ a simple API is available.
 
 ```javascript
 {
-    "apply_to_slaves": true|false  // <optional>   // Propagate the effect to slaves devices or not
+    "config":    [
+                   {
+                     "name": "simple-color",
+                     "options": {
+                       "activated": true,
+                       "delay": 0,
+                       "duration": 3000,
+                       "waitAtEnd": 0,
+                       "repeat": null,
+                       "color": [0,80,250]
+                     }
+                   }
+                 ],            // Array of effects bricks as exported from the configurator
+    "timeLimit": integer|null,  // <optional>   //If not null, effect will be stopped after this milliseconds time value
+    "priority":  integer|null,   // <optional> , //If not null, the effect will be positioned in the stack depending on its priority, the greatest priority wins
+                                // Note: The effect that "losts" is not removed, it will resume after the new one is finished (if the new one it's a finite time effect).
+    "apply_to_slaves": true|false,  // <optional>   // Propagate the effect to slaves devices or not
+    "prevent_restore":  boolean     <optional> //If true the effect won't be restored at the next launch of the app
 }
 ```
 

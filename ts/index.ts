@@ -217,7 +217,7 @@ const stopLoop = () => {
  * @param {number} priority   default 0,   If set, it will place the effect in the stack depending on its priority
  *                                         The effect with highest priority is set to current and will run until it ends
  */
-const handleEffect = (config: any, timeLimit: number | null, priority: number | null) => {
+const handleEffect = (config: any, timeLimit: number | null, priority: number | null, save: boolean = true) => {
     createLoop();
     let time = new Date().getTime();
     let id = time + "__" + Math.floor(Math.random() * 100000000); //Generates an ID
@@ -262,7 +262,9 @@ const handleEffect = (config: any, timeLimit: number | null, priority: number | 
         }, timeLimit);
     }
     //Write a backup to restore it the next time the script will be launched
-    saveLastEffect({config: config, timeLimit: timeLimit, priority: priority});
+    if(save){
+        saveLastEffect({config: config, timeLimit: timeLimit, priority: priority});
+    }
 };
 
 
@@ -336,9 +338,10 @@ app.post('/toggle', function (req, res) {
 * The request must contain a JSON body as the following:
 * {
 *   "config":    Array<EffectConfig>,
-* 	"timeLimit": integer (ms)|null,  <optional>   //If not null, effect will be stopped after this time value
+* 	"timeLimit": integer (ms)|null,  <optional> ,   //If not null, effect will be stopped after this time value
 * 	"priority":  integer|null       <optional> , //If not null, the effect will be positioned in the stack depending on its priority, the greatest priority wins
 *                                                 //Note: The effect that "losts" is not removed, it will resume after the new one is finished (if the new one it's a finite time effect).
+* 	"prevent_restore":  boolean     <optional> //If true the effect won't be restored at the next launch of the app
 * }
 */
 app.post('/stack', function (req, res) {
@@ -347,7 +350,7 @@ app.post('/stack', function (req, res) {
         let config = req.body.config;
         let timeLimit = req.body.timeLimit || EffectsUtils.evaluateEffectDuration(config);
         let priority = req.body.priority || 0;
-        handleEffect(config, timeLimit, priority);
+        handleEffect(config, timeLimit, priority, !(true === req.body.prevent_restore));
         if(req.body.apply_to_slaves) {
             forwarder.stack(config, timeLimit, priority);
         }
